@@ -1,3 +1,4 @@
+import argparse
 import logging
 from random import randint
 import sys
@@ -17,28 +18,29 @@ def get_random_power(resistance: int) -> int:
     return randint(0, resistance)
 
 
-def get_resistance_value(argv: list) -> int:
+def parse_args(args=sys.argv[1:]):
     """
-    Возвращает числовое значение сопротивления.
-
-    ::
+    Парсит аргументы командной строки.
     """
-    if len(argv) != 2:
-        logger.error('\nError. Must be: {name} resistance_value\n'.format(name=argv[0]))
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__)
 
-    _, resistance = argv
+    grp = parser.add_argument_group('Hfeg emulator settinigs')
+    grp.add_argument(
+        '--resistance',
+        metavar='N',
+        default=0,
+        type=int,
+        help='Integer value of resistance'
+    )
 
-    try:
-        resistance_value = int(resistance)
-    except ValueError:
-        logger.error('Error: resistance must be int')
-        sys.exit(2)
+    return parser.parse_args(args)
 
-    return resistance_value
+
+def main():
+    options = parse_args()
+    power_value = get_random_power(options.resistance)
+    print(power_value)
 
 
 if __name__ == '__main__':
-    resistance_value = get_resistance_value(sys.argv)
-    power_value = get_random_power(resistance_value)
-    print(power_value)
+    main()
